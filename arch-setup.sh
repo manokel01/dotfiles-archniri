@@ -257,10 +257,10 @@ fi
 # AppArmor parameters: already set in archinstall.json, but verify they're present.
 # If archinstall did not add them, inject them now.
 if ! grep -q 'apparmor=1' "$GRUB_DEFAULT"; then
-    warn "AppArmor kernel params not found in GRUB_CMDLINE_LINUX — injecting now."
-    sudo sed -i 's/^GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="\1 apparmor=1 security=apparmor"/' \
+    warn "AppArmor kernel params not found in GRUB_CMDLINE_LINUX_DEFAULT — injecting now."
+    sudo sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 apparmor=1 security=apparmor"/' \
         "$GRUB_DEFAULT"
-    ok "AppArmor params added to GRUB_CMDLINE_LINUX."
+    ok "AppArmor params added to GRUB_CMDLINE_LINUX_DEFAULT."
 fi
 
 # First regeneration (final one comes at step 15 after DATA partition is ready)
