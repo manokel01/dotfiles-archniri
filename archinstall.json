@@ -1,0 +1,82 @@
+{
+  "_doc": {
+    "purpose": "archinstall config — ThinkPad P14s Gen 4 AMD, Arch+Niri Phase 1",
+    "schema_note": "Written against archinstall 2.8/4.x. If rejected, run archinstall TUI once, save config, use that as schema reference.",
+    "prerequisite": "pre-archinstall.sh must have run. /mnt must be fully mounted.",
+    "usage": "archinstall --config archinstall.json",
+    "password_warning": "SET passwords before running. NEVER commit with passwords set. Add archinstall.json to .gitignore.",
+    "what_this_skips": "AUR packages, AppArmor service, ufw, Niri, Waybar, dotfiles — all handled by arch-setup.sh (Chat B)."
+  },
+  "archinstall-language": "English",
+  "hostname": "thinkpad",
+  "timezone": "Europe/Athens",
+  "ntp": true,
+  "locale_config": {
+    "kb_layout": "us",
+    "sys_enc": "UTF-8",
+    "sys_lang": "en_US"
+  },
+  "kernels": ["linux"],
+  "bootloader": "grub-install",
+  "disk_config": {
+    "config_type": "pre_mounted_config",
+    "mountpoint": "/mnt"
+  },
+  "mirror_config": {
+    "mirror_regions": {
+      "Greece": [
+        "https://ftp.cc.uoc.gr/mirrors/linux/archlinux/$repo/os/$arch",
+        "https://ftp.ntua.gr/linux/archlinux/$repo/os/$arch"
+      ],
+      "Worldwide": [
+        "https://geo.mirror.pkgbuild.com/$repo/os/$arch"
+      ]
+    }
+  },
+  "packages": [
+    "base",
+    "base-devel",
+    "linux",
+    "linux-firmware",
+    "amd-ucode",
+    "networkmanager",
+    "git",
+    "grub",
+    "efibootmgr",
+    "os-prober",
+    "btrfs-progs",
+    "sudo",
+    "curl",
+    "wget",
+    "micro"
+  ],
+  "services": ["NetworkManager"],
+  "network_config": {"type": "nm"},
+  "audio_config": {"audio": "pipewire"},
+  "swap": false,
+  "offline": false,
+  "no-pkg-lookups": false,
+  "profile_config": null,
+  "parallel downloads": 5,
+  "additional-repositories": [],
+  "custom-commands": [
+    "sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen",
+    "sed -i 's/#el_GR.UTF-8 UTF-8/el_GR.UTF-8 UTF-8/' /etc/locale.gen",
+    "locale-gen",
+    "sed -i 's/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers",
+    "sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT=\"/&apparmor=1 security=apparmor /' /etc/default/grub",
+    "echo 'GRUB_DISABLE_OS_PROBER=false' >> /etc/default/grub",
+    "grub-mkconfig -o /boot/grub/grub.cfg"
+  ],
+  "user_config": {
+    "!users": [
+      {
+        "username": "manokel",
+        "!password": "CHANGE_ME",
+        "sudo": true,
+        "groups": ["wheel", "audio", "video", "input", "storage", "optical", "lp", "scanner", "network", "power"]
+      }
+    ],
+    "!root-password": "CHANGE_ME"
+  }
+}
