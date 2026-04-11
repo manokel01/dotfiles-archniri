@@ -1,0 +1,130 @@
+window#waybar {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    font-family: "JetBrains Mono", "Font Awesome 6 Free", "Symbols Nerd Font";
+    font-size: 13px;
+    font-weight: bold;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+#workspaces button {
+    padding: 0 4px; 
+    color: #cdd6f4;
+    background: transparent;
+}
+
+#workspaces button.active {
+    color: #7dcfff;
+    background: transparent;
+    border-radius: 0;
+}
+
+/* ... [Top sections: Waybar window & Workspaces remain the same] ... */
+
+/* --- UNIFIED MODULE STYLING --- */
+/* This is your single source of truth for spacing */
+#memory,
+#custom-power_profile,
+#network, 
+#bluetooth, 
+#pulseaudio, 
+#battery, 
+#clock.time,
+#clock.date,
+#custom-display,
+#language,
+#custom-power,
+#custom-night_light,
+#custom-keybinds,
+#custom-git_sync,
+#custom-updates,
+#custom-webcam,
+#custom-bitwarden,
+#custom-rclone { 
+    background-color: transparent; 
+    padding: 0 5px;
+    margin: 0;
+}
+
+/* --- CLOCK --- */
+/* Only keep these if you want the time/date to have more space than the icons */
+#clock.time { padding: 0 12px; }
+#clock.date { padding: 0 12px; }
+
+/* --- BATTERY --- */
+#battery.warning { color: #fab387; }
+#battery.critical:not(.charging) { 
+    color: #f38ba8; 
+    animation: blink 1s linear infinite alternate;
+}
+
+/* --- POWER --- */
+#custom-power {
+    color: #f38ba8;
+    padding-right: 20px; /* Kept to prevent the icon from hugging the screen edge */
+}
+#custom-power:hover { color: #ff757f; }
+
+/* --- WEBCAM --- */
+#custom-webcam { color: #a6adc8; }
+#custom-webcam.active {
+    color: #f7768e;
+    background-color: rgba(247, 118, 142, 0.1);
+}
+#custom-webcam.active-internal { color: #e0af68; }
+
+/* --- NIGHT LIGHT --- */
+#custom-night_light:active,
+#custom-night_light:hover {
+    background-color: rgba(255, 165, 0, 0.2);
+    border-radius: 8px;
+}
+
+/* --- RCLONE --- */
+#custom-rclone { color: #a9b1d6; }
+#custom-rclone.syncing { color: #F7768E; }
+#custom-rclone.pending { color: #7aa2f7; }
+#custom-rclone.error {
+    color: #e0af68; 
+    background-color: rgba(224, 175, 104, 0.1); 
+}
+
+/* --- GITHUB SYNC --- */
+#custom-git_sync.clean { color: #9ece6a; }
+#custom-git_sync.dirty { color: #f7768e; font-weight: bold; }
+#custom-git_sync.unpushed { color: #7aa2f7; }
+
+/* --- MAINTENANCE --- */
+#custom-updates { color: #e0af68; }
+#custom-updates.updated { color: #9ece6a; }
+#custom-updates.reboot {
+    color: #ffffff;
+    background-color: #f7768e; /* Tokyo Night Red */
+    padding: 0 10px;
+    border-radius: 0; /* Keep it Native Void (no rounding) */
+    animation: blink 3s infinite alternate; /* Faster, urgent blink */
+}
+
+/* --- TRAY --- */
+#tray {
+    color: #cdd6f4;
+    padding-left: 8px;
+}
+
+@keyframes blink {
+    to { background-color: rgba(243, 139, 168, 0.4); color: #11111b; }
+}
+
+/* --- MEMORY --- */
+#memory {
+    color: #c0caf5;
+}
+
+#memory.warning {
+    color: #e0af68; /* Tokyo Night Yellow */
+}
+
+#memory.critical {
+    color: #f7768e; /* Tokyo Night Red */
+}

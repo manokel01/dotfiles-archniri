@@ -1,0 +1,224 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "spacing": 15,
+    "reload_style_on_change": true,
+    "modules-left": [
+        "niri/workspaces", 
+        "custom/updates", 
+        "custom/git_sync",
+        "cpu",
+        "memory"
+    ],
+    "modules-center": [
+        "clock#time", 
+        "custom/keybinds", 
+        "clock#date"
+    ],
+    "modules-right": [
+        "custom/language",
+        "custom/bitwarden",
+        "tray",
+        "custom/rclone",
+        "custom/webcam",
+        "custom/display",
+        "pulseaudio", 
+        "bluetooth", 
+        "network",
+        "custom/power_profile",
+        "battery",
+        "custom/power"
+    ],
+
+    "niri/workspaces": {
+         "all-outputs": true
+    },
+
+    "custom/rclone": {
+            "format": "{}",
+            "return-type": "json",
+            "exec": "/home/manokel/.local/bin/rclone_status.sh",
+            "interval": 20,
+            "on-click": "kitty --class sync_floats -e /home/manokel/.local/bin/rclone_sync.sh",
+            "on-click-right": "kitty --class sync_floats -e /home/manokel/.local/bin/rclone_resync.sh",
+            "signal": 10,
+            "tooltip": true
+    },
+
+    "custom/power_profile": {
+        "exec": "/home/manokel/.local/bin/power_status.sh",
+        "return-type": "json",
+        "interval": 10,
+        "signal": 1,
+        "on-click": "/home/manokel/.local/bin/power_profile.sh",
+        "format": "{}"
+    },
+
+    "clock#time": {
+        "interval": 1,
+        "format": "{:%H:%M:%S}",
+        "tooltip": false
+    },
+
+    "clock#date": {
+        "interval": 20,
+        "format": "󰃭 {:%d-%m-%Y}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "on-click": "brave-browser 'https://calendar.google.com/'"
+    },
+
+    "custom/display": {
+        "format": "󰍹",
+        "on-click": "nwg-displays",
+        "tooltip": false
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟 {volume}%",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "on-click": "kitty --class floating_terminal -e wiremix"
+    },
+
+    "battery": {
+        "interval": 5,
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}% | {power:0.1f}W",
+        "format-charging": "󰂄 {capacity}% | +{power:0.1f}W",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-critical": "󱃍 {capacity}%!!", 
+        "format-warning": "󰂃 {capacity}%",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "Time Left: {timeTo}\nHealth: {health}%\nPower: {power}W"
+    },
+
+    "network": {
+        "format-wifi": "",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰖪",
+        "tooltip-format-wifi": "{essid} {frequency}GHz ({signalStrength}%)",
+        "on-click": "/home/manokel/.local/bin/network-controller.sh --menu",
+        "on-click-right": "kitty --class floating_terminal -e /home/manokel/.local/bin/network-controller.sh --manage"
+    },
+
+	"bluetooth": {
+        "format": "󰂯",
+        "format-connected": "󰂱",
+        "format-disabled": "󰂲",
+        "on-click": "/home/manokel/.local/bin/rofi-bluetooth.sh",
+        "on-click-right": "/home/manokel/.local/bin/bt-codec-picker.sh",
+        "tooltip-format": "Bluetooth Enabled (No Devices)",
+        "tooltip-format-connected": "{device_enumerate}",
+        "tooltip-format-enumerate-connected": "󰂱 {device_alias} ({device_battery_percentage}%)",
+        "tooltip-format-disabled": "Bluetooth Disabled"
+    },
+
+    "custom/language": {
+        "exec": "/home/manokel/.local/bin/toggle-layout.sh",
+        "interval": 1,
+        "on-click": "niri msg action switch-keyboard-layout next",
+        "signal": 1,
+        "format": "{}",
+        "tooltip": false
+    },
+
+    "custom/power": {
+        "format": "",
+        "on-click": "/home/manokel/.config/wlogout/launch.sh", 
+        "tooltip": false
+    },
+
+    "custom/webcam": {
+            "exec": "/home/manokel/.local/bin/webcam_sensor.sh",
+            "return-type": "json",
+            "interval": 2,
+            "format": "{}",
+            "on-click": "/home/manokel/.local/bin/webcam_action.sh",
+            "tooltip": true
+        },
+
+    "custom/keybinds": {
+        "format": "󰌌",
+        "on-click": "/home/manokel/.local/bin/keybinds.sh",
+        "tooltip": false
+    },
+    
+	"custom/git_sync": {
+               "format": "{}",
+               "return-type": "json",
+               "interval": 86400,
+               "exec": "/home/manokel/.local/bin/git_sync_status.sh",
+               "signal": 2,
+               "on-click": "kitty --class floating_terminal -e /home/manokel/.local/bin/void"
+           },
+    
+    "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+            "notification": " <span foreground='red'><sup></sup></span>",
+            "none": "",
+            "dnd-notification": " <span foreground='red'><sup></sup></span>",
+            "dnd-none": "",
+            "inhibited-notification": " <span foreground='red'><sup></sup></span>",
+            "inhibited-none": "",
+            "dnd-inhibited-notification": " <span foreground='red'><sup></sup></span>",
+            "dnd-inhibited-none": ""
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    },
+    
+    "tray": {
+        "output": "eDP-1",
+        "icon-size": 14,
+        "spacing": 20
+    },
+    
+    "custom/updates": {
+            "format": "{}",
+            "return-type": "json",
+            "interval": 43200,
+            "exec": "/home/manokel/.local/bin/pacman_updates.sh",
+            "on-click": "kitty --class float-term bash -c 'paru -Syu; pkill -RTMIN+8 waybar; exec bash'",
+            "signal": 8,
+            "tooltip": true
+        },
+    
+    "custom/bitwarden": {
+        "format": "󰟵", 
+        "on-click": "kitty --class vault_tui -e /home/manokel/.local/bin/pass-picker.sh",
+        "on-click-right": "rbw sync && notify-send 'Bitwarden' 'Vault Synced Successfully' -i security-high",
+        "tooltip": false
+    },
+
+    "memory": {
+        "interval": 10,
+        "format": "󰍛 {percentage}%",
+        "format-alt": "󰍛 {used:0.1f}GiB",
+        "on-click": "kitty btop",
+        "states": {
+            "warning": 70,
+            "critical": 90
+        },
+        "tooltip": true,
+        "tooltip-format": "Memory: {used:0.1f}GiB / {total:0.1f}GiB\nSwap: {swapUsed:0.1f}GiB / {swapTotal:0.1f}GiB"
+    },
+
+    "cpu": {
+        "interval": 10,
+        "format": "󰻠 {usage}%",
+        "on-click": "kitty btop",
+        "tooltip": true
+    }
+}
