@@ -1,0 +1,12 @@
+[Unit]
+Description=gtklock screen locker
+OnSuccess=unlock.target
+PartOf=lock.target
+After=lock.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/gtklock -d
+
+[Install]
+WantedBy=lock.target
