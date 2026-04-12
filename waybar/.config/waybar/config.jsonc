@@ -22,9 +22,7 @@
         "tray",
         "custom/rclone",
         "custom/webcam",
-        "custom/display",
         "pulseaudio", 
-        "bluetooth", 
         "network",
         "custom/power_profile",
         "battery",
@@ -32,7 +30,7 @@
     ],
 
     "niri/workspaces": {
-         "all-outputs": true
+        "all-outputs": false
     },
 
     "custom/rclone": {
@@ -68,12 +66,6 @@
         "on-click": "brave-browser 'https://calendar.google.com/'"
     },
 
-    "custom/display": {
-        "format": "󰍹",
-        "on-click": "nwg-displays",
-        "tooltip": false
-    },
-
     "pulseaudio": {
         "format": "{icon} {volume}%",
         "format-muted": "󰝟 {volume}%",
@@ -107,22 +99,10 @@
         "on-click-right": "kitty --class floating_terminal -e /home/manokel/.local/bin/network-controller.sh --manage"
     },
 
-	"bluetooth": {
-        "format": "󰂯",
-        "format-connected": "󰂱",
-        "format-disabled": "󰂲",
-        "on-click": "/home/manokel/.local/bin/rofi-bluetooth.sh",
-        "on-click-right": "/home/manokel/.local/bin/bt-codec-picker.sh",
-        "tooltip-format": "Bluetooth Enabled (No Devices)",
-        "tooltip-format-connected": "{device_enumerate}",
-        "tooltip-format-enumerate-connected": "󰂱 {device_alias} ({device_battery_percentage}%)",
-        "tooltip-format-disabled": "Bluetooth Disabled"
-    },
-
     "custom/language": {
         "exec": "/home/manokel/.local/bin/toggle-layout.sh",
-        "interval": 1,
-        "on-click": "niri msg action switch-keyboard-layout next",
+        "interval": 2,
+        "on-click": "niri msg action switch-layout next && pkill -SIGRTMIN+1 waybar",
         "signal": 1,
         "format": "{}",
         "tooltip": false

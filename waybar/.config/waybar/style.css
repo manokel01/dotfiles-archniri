@@ -1,130 +1,281 @@
-window#waybar {
-    background: #1e1e2e;
-    color: #cdd6f4;
-    font-family: "JetBrains Mono", "Font Awesome 6 Free", "Symbols Nerd Font";
+/* Nord Color Palette */
+/* https://www.nordtheme.com/ */
+
+/* Polar Night */
+/* #2E3440 - nord0 - darkest background */
+/* #3B4252 - nord1 - darker bg / selection */
+/* #434C5E - nord2 - medium bg / comment */
+/* #4C566A - nord3 - lighter dark / line numbers */
+
+/* Snow Storm */
+/* #D8DEE9 - nord4 - dim foreground */
+/* #E5E9F0 - nord5 - medium foreground */
+/* #ECEFF4 - nord6 - bright foreground */
+
+/* Frost */
+/* #8FBCBB - nord7 - teal */
+/* #88C0D0 - nord8 - light blue (cyan) */
+/* #81A1C1 - nord9 - blue */
+/* #5E81AC - nord10 - dark blue */
+
+/* Aurora */
+/* #BF616A - nord11 - red */
+/* #D08770 - nord12 - orange */
+/* #EBCB8B - nord13 - yellow */
+/* #A3BE8C - nord14 - green */
+/* #B48EAD - nord15 - purple */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
     font-size: 13px;
-    font-weight: bold;
-    transition-property: background-color;
-    transition-duration: .5s;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: #2E3440;
+    color: #D8DEE9;
+    border-bottom: 1px solid #3B4252;
+}
+
+/* Workspaces */
+#workspaces {
+    padding: 0 4px;
 }
 
 #workspaces button {
-    padding: 0 4px; 
-    color: #cdd6f4;
+    color: #4C566A;
     background: transparent;
+    padding: 0 6px;
+    border-radius: 0;
+    font-size: 11px;
 }
 
 #workspaces button.active {
-    color: #7dcfff;
-    background: transparent;
-    border-radius: 0;
+    color: #88C0D0;
 }
 
-/* ... [Top sections: Waybar window & Workspaces remain the same] ... */
-
-/* --- UNIFIED MODULE STYLING --- */
-/* This is your single source of truth for spacing */
-#memory,
-#custom-power_profile,
-#network, 
-#bluetooth, 
-#pulseaudio, 
-#battery, 
-#clock.time,
-#clock.date,
-#custom-display,
-#language,
-#custom-power,
-#custom-night_light,
-#custom-keybinds,
-#custom-git_sync,
-#custom-updates,
-#custom-webcam,
-#custom-bitwarden,
-#custom-rclone { 
-    background-color: transparent; 
-    padding: 0 5px;
-    margin: 0;
+#workspaces button.urgent {
+    color: #BF616A;
 }
 
-/* --- CLOCK --- */
-/* Only keep these if you want the time/date to have more space than the icons */
-#clock.time { padding: 0 12px; }
-#clock.date { padding: 0 12px; }
-
-/* --- BATTERY --- */
-#battery.warning { color: #fab387; }
-#battery.critical:not(.charging) { 
-    color: #f38ba8; 
-    animation: blink 1s linear infinite alternate;
+#workspaces button:hover {
+    color: #D8DEE9;
+    background: #3B4252;
 }
 
-/* --- POWER --- */
-#custom-power {
-    color: #f38ba8;
-    padding-right: 20px; /* Kept to prevent the icon from hugging the screen edge */
-}
-#custom-power:hover { color: #ff757f; }
-
-/* --- WEBCAM --- */
-#custom-webcam { color: #a6adc8; }
-#custom-webcam.active {
-    color: #f7768e;
-    background-color: rgba(247, 118, 142, 0.1);
-}
-#custom-webcam.active-internal { color: #e0af68; }
-
-/* --- NIGHT LIGHT --- */
-#custom-night_light:active,
-#custom-night_light:hover {
-    background-color: rgba(255, 165, 0, 0.2);
-    border-radius: 8px;
-}
-
-/* --- RCLONE --- */
-#custom-rclone { color: #a9b1d6; }
-#custom-rclone.syncing { color: #F7768E; }
-#custom-rclone.pending { color: #7aa2f7; }
-#custom-rclone.error {
-    color: #e0af68; 
-    background-color: rgba(224, 175, 104, 0.1); 
-}
-
-/* --- GITHUB SYNC --- */
-#custom-git_sync.clean { color: #9ece6a; }
-#custom-git_sync.dirty { color: #f7768e; font-weight: bold; }
-#custom-git_sync.unpushed { color: #7aa2f7; }
-
-/* --- MAINTENANCE --- */
-#custom-updates { color: #e0af68; }
-#custom-updates.updated { color: #9ece6a; }
-#custom-updates.reboot {
-    color: #ffffff;
-    background-color: #f7768e; /* Tokyo Night Red */
+/* Clock */
+#clock {
+    color: #81A1C1;
     padding: 0 10px;
-    border-radius: 0; /* Keep it Native Void (no rounding) */
-    animation: blink 3s infinite alternate; /* Faster, urgent blink */
+    font-weight: bold;
 }
 
-/* --- TRAY --- */
-#tray {
-    color: #cdd6f4;
-    padding-left: 8px;
+/* CPU */
+#cpu {
+    color: #A3BE8C;
+    padding: 0 8px;
+}
+
+#cpu.warning {
+    color: #EBCB8B;
+}
+
+#cpu.critical {
+    color: #BF616A;
+}
+
+/* Memory */
+#memory {
+    color: #8FBCBB;
+    padding: 0 8px;
+}
+
+/* Network */
+#network {
+    color: #A3BE8C;
+    padding: 0 8px;
+}
+
+#network.disconnected,
+#network.disabled {
+    color: #BF616A;
+}
+
+#network.wifi {
+    color: #A3BE8C;
+}
+
+#network.ethernet {
+    color: #8FBCBB;
+}
+
+/* Bluetooth */
+#bluetooth {
+    color: #81A1C1;
+    padding: 0 8px;
+}
+
+#bluetooth.connected {
+    color: #88C0D0;
+}
+
+#bluetooth.disabled,
+#bluetooth.off {
+    color: #4C566A;
+}
+
+/* Audio / Pulseaudio */
+#pulseaudio {
+    color: #B48EAD;
+    padding: 0 8px;
+}
+
+#pulseaudio.muted {
+    color: #4C566A;
+}
+
+#pulseaudio.microphone {
+    color: #B48EAD;
+    padding: 0 8px;
+}
+
+#pulseaudio.microphone.source-muted {
+    color: #BF616A;
+}
+
+/* Battery */
+#battery {
+    color: #A3BE8C;
+    padding: 0 8px;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: #A3BE8C;
+}
+
+#battery.warning:not(.charging) {
+    color: #EBCB8B;
+}
+
+#battery.critical:not(.charging) {
+    color: #BF616A;
+    animation: blink 0.5s steps(1) infinite;
 }
 
 @keyframes blink {
-    to { background-color: rgba(243, 139, 168, 0.4); color: #11111b; }
+    to { color: #D8DEE9; }
 }
 
-/* --- MEMORY --- */
-#memory {
-    color: #c0caf5;
+/* Updates */
+#custom-updates {
+    color: #EBCB8B;
+    padding: 0 8px;
 }
 
-#memory.warning {
-    color: #e0af68; /* Tokyo Night Yellow */
+#custom-updates.updated {
+    color: #A3BE8C;
 }
 
-#memory.critical {
-    color: #f7768e; /* Tokyo Night Red */
+#custom-updates.reboot {
+    color: #BF616A;
+    animation: blink 1s steps(1) infinite;
 }
+
+/* Git sync */
+#custom-git_sync {
+    color: #8FBCBB;
+    padding: 0 8px;
+}
+
+/* Language */
+#custom-language {
+    color: #81A1C1;
+    padding: 0 8px;
+}
+
+/* Keybinds */
+#custom-keybinds {
+    color: #4C566A;
+    padding: 0 8px;
+}
+
+#custom-keybinds:hover {
+    color: #D8DEE9;
+}
+
+/* Clipboard */
+#custom-clipboard {
+    color: #8FBCBB;
+    padding: 0 8px;
+}
+
+/* Rclone */
+#custom-rclone {
+    color: #81A1C1;
+    padding: 0 8px;
+}
+
+/* Tray */
+#tray {
+    padding: 0 6px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* Backlight */
+#backlight {
+    color: #EBCB8B;
+    padding: 0 8px;
+}
+
+/* Power menu */
+#custom-power {
+    color: #BF616A;
+    padding: 0 10px;
+    font-size: 14px;
+}
+
+#custom-power:hover {
+    color: #D8DEE9;
+    background: #BF616A;
+}
+
+/* Tooltip */
+tooltip {
+    background: #3B4252;
+    border: 1px solid #4C566A;
+    border-radius: 4px;
+}
+
+tooltip label {
+    color: #D8DEE9;
+    padding: 4px 8px;
+}
+
+/* General hover effect */
+#cpu:hover,
+#memory:hover,
+#network:hover,
+#bluetooth:hover,
+#pulseaudio:hover,
+#battery:hover,
+#backlight:hover,
+#custom-updates:hover,
+#custom-git_sync:hover,
+#custom-language:hover,
+#custom-clipboard:hover,
+#custom-rclone:hover {
+    background: #3B4252;
+}
+
+

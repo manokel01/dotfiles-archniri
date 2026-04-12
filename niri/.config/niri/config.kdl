@@ -1,29 +1,40 @@
 // Startup Applications
 spawn-sh-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &"
-spawn-at-startup "awww-daemon"
+spawn-at-startup "swayosd-server"
 spawn-at-startup "waybar"
 spawn-at-startup "sh" "-c" "vicinae server &"
+spawn-at-startup "blueman-applet"
+spawn-at-startup "swayidle" "-w" "-C" "/home/manokel/.config/swayidle/config"
+
+//Wallpeprs
+spawn-at-startup "swaybg" "-m" "fill" "-i" "/home/manokel/Pictures/Wallpapers/cartoon-of-a-bowl-of-ramen-with-two-monsters-fighting.png"
 
 // General Settings
 prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/%Y-%m-%d %H-%M-%S.png"
 
 output "eDP-1" {
-    mode "1920x1080@60.024"
+    mode "1920x1200@60.000"
     scale 1
+    position x=0 y=0
 }
 
-input {
+output "DP-2" {
+    mode "3840x2160@60.000"
+    scale 1
+    position x=1920 y=0
+}
+
+input {        
     keyboard {
         xkb {
-            layout "us"
-            options "caps:escape"
+            layout "us,gr"
+            options "altwin:swap_lalt_lwin,level3:ralt_switch"
         }
     }
 
     touchpad {
         tap
-        natural-scroll
     }
 
     focus-follows-mouse
@@ -46,37 +57,36 @@ overview {
     }
 }
 
-layer-rule {
-    match namespace="^awww-daemon$"
-    place-within-backdrop true
-}
-
 binds {
+	MOD+SHIFT+R 						{ spawn "sh" "-c" "niri msg action load-config-file"; }
+	MOD+SHIFT+W                         { spawn "sh" "-c" "killall waybar; waybar &"; }
+
+	// Ensures gtklock always starts with the US layout for entering password
+	MOD+SHIFT+Q hotkey-overlay-title="Lock Screen: gtklock" { spawn-sh "setxkbmap us && gtklock -s ~/.config/gtklock/style.css -m /usr/lib/gtklock/userinfo-module.so -m /usr/lib/gtklock/powerbar-module.so -m /usr/lib/gtklock/dpms.so"; }
+
     // Shortcuts Panel
     MOD+SHIFT+ESCAPE                    { show-hotkey-overlay; }
 
     // Application Shortcuts
-    MOD+RETURN                          hotkey-overlay-title="Open Terminal: alacritty" { spawn-sh "alacritty"; }
-    MOD+ALT+RETURN                      hotkey-overlay-title="Open Terminal: kitty" { spawn-sh "kitty"; }
-    MOD+ALT+B                         hotkey-overlay-title="Open Secondary Browser: chrome" { spawn-sh "google-chrome-stable --enable-features=TouchpadOverscrollHistoryNavigation"; }
-    MOD+SHIFT+Q                         hotkey-overlay-title="Lock Screen: gtklock" { spawn-sh "gtklock"; }
+    MOD+RETURN                      	hotkey-overlay-title="Open Terminal: kitty" { spawn-sh "kitty"; }
+    MOD+ALT+B                         	hotkey-overlay-title="Open Secondary Browser: chrome" { spawn-sh "google-chrome-stable --enable-features=TouchpadOverscrollHistoryNavigation"; }
     MOD+A                               hotkey-overlay-title="Open App Launcher: vicinae" { spawn-sh "vicinae toggle"; }
-    MOD+B                               hotkey-overlay-title="Open Browser: firefox" { spawn-sh "firefox-developer-edition"; }
+    MOD+B                               hotkey-overlay-title="Open Browser: firefox" { spawn-sh "firefox"; }
     MOD+E                               hotkey-overlay-title="File Manager: Thunar" { spawn-sh "thunar"; }
     MOD+ALT+E                           hotkey-overlay-title="File Manager: Yazi" { spawn-sh "yazi"; }
     MOD+W                               hotkey-overlay-title="Open Wallpaper Selector" { spawn-sh "$HOME/.config/scripts/bgselector.sh"; }
 
     // Media Keys
-    XF86AudioRaiseVolume                allow-when-locked=true { spawn-sh "mediactl volume_up"; }
-    XF86AudioLowerVolume                allow-when-locked=true { spawn-sh "mediactl volume_down"; }
-    XF86MonBrightnessUp                 allow-when-locked=true { spawn-sh "mediactl brightness_up"; }
-    XF86MonBrightnessDown               allow-when-locked=true { spawn-sh "mediactl brightness_down"; }
-    XF86AudioMute                       allow-when-locked=true { spawn-sh "mediactl volume_mute"; }
-    XF86AudioMicMute                    allow-when-locked=true { spawn-sh "mediactl mic_mute"; }
-    XF86AudioNext                       allow-when-locked=true { spawn-sh "mediactl next_track"; }
-    XF86AudioPause                      allow-when-locked=true { spawn-sh "mediactl play_pause"; }
-    XF86AudioPlay                       allow-when-locked=true { spawn-sh "mediactl play_pausse"; }
-    XF86AudioPrev                       allow-when-locked=true { spawn-sh "mediactl prev_track"; }
+   	XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "swayosd-client --output-volume raise"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "swayosd-client --output-volume lower"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl set +5% && swayosd-client --brightness raise"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl set 5%- && swayosd-client --brightness lower"; }
+    XF86AudioMute allow-when-locked=true { spawn-sh "swayosd-client --output-volume mute-toggle"; }
+	XF86AudioMicMute allow-when-locked=true { spawn-sh "mic-toggle.sh"; }	
+	XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
 
     // Window Management
     MOD+Q                               { close-window; }
@@ -186,18 +196,14 @@ binds {
     MOD+T                               { toggle-window-floating; }
     MOD+F                               { fullscreen-window; }
     MOD+M                               { maximize-column; }
-    // MOD+W                               { toggle-column-tabbed-display; }
-
+    
     // Utils
     MOD+S                               { screenshot; }
     MOD+SHIFT+S                         { screenshot-screen write-to-disk=true; }
     MOD+CTRL+S                          { screenshot-window write-to-disk=true; }
-    MOD+P                               { spawn-sh "pgrep -x hyprpicker >/dev/null || hyprpicker"; }
 
-    // Application Restarts
-    MOD+ALT+W                           { spawn "sh" "-c" "pgrep -x waybar >/dev/null && killall waybar || waybar &"; }
-    // use with toggle in waybar (doens't restart if not running)
-    // MOD+ALT+W                           { spawn "killall" "-SIGUSR1" "waybar"; }
+	// Language toggle
+    MOD+SPACE { spawn "sh" "-c" "niri msg action switch-layout next && pkill -SIGRTMIN+1 waybar"; }
 }
 
 // Layout Settings
@@ -268,8 +274,6 @@ window-rule {
 }
 
 window-rule {
-    match app-id=r#"firefox"#
-    match app-id=r#"google-chrome"#
     match app-id=r#"code"#
     match app-id=r#"obsidian$"#
     open-maximized true
@@ -403,7 +407,9 @@ environment {
     CLUTTER_BACKEND "wayland"
 
     // Performance
-    VDPAU_DRIVER "va_gl"
-    LIBVA_DRIVER_NAME "iHD"
+    VDPAU_DRIVER "radeonsi"
+    LIBVA_DRIVER_NAME "radeonsi"
 }
+
+
 

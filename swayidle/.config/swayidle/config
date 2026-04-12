@@ -1,35 +1,8 @@
-# swayidle config — ThinkPad P14s Gen 4 AMD
-# Dual-path idle: aggressive on battery, relaxed on AC.
-# Ported from hypridle.conf battery/AC sensing via /sys/class/power_supply/AC/online
-#
-# Battery path: 2.5m dim → 3.0m lock → 3.5m dpms → 15m suspend
-# AC path:      9.0m dim → 10.0m lock → 11.0m dpms → no suspend
-
-# --- STAGE 1: DIM SCREEN ---
-# Battery: 150s (2.5 min)
-timeout 150 'if [ "$(cat /sys/class/power_supply/AC/online)" -eq 0 ]; then brightnessctl -s set 10%; fi' \
-    resume 'brightnessctl -r'
-# AC: 540s (9 min)
-timeout 540 'if [ "$(cat /sys/class/power_supply/AC/online)" -eq 1 ]; then brightnessctl -s set 10%; fi' \
-    resume 'brightnessctl -r'
-
-# --- STAGE 2: LOCK SESSION (triggers gtklock via lock.target) ---
-# Battery: 180s (3 min)
-timeout 180 'if [ "$(cat /sys/class/power_supply/AC/online)" -eq 0 ]; then loginctl lock-session; fi'
-# AC: 600s (10 min)
-timeout 600 'if [ "$(cat /sys/class/power_supply/AC/online)" -eq 1 ]; then loginctl lock-session; fi'
-
-# --- STAGE 3: DPMS OFF (power off monitors) ---
-# Battery: 210s (3.5 min)
-timeout 210 'if [ "$(cat /sys/class/power_supply/AC/online)" -eq 0 ]; then niri msg action power-off-monitors; fi' \
-    resume 'niri msg action power-on-monitors'
-# AC: 660s (11 min)
-timeout 660 'if [ "$(cat /sys/class/power_supply/AC/online)" -eq 1 ]; then niri msg action power-off-monitors; fi' \
-    resume 'niri msg action power-on-monitors'
-
-# --- STAGE 4: SUSPEND (battery only) ---
-# Battery: 900s (15 min)
-timeout 900 'if [ "$(cat /sys/class/power_supply/AC/online)" -eq 0 ]; then systemctl suspend; fi'
-
-# --- BEFORE SLEEP: always lock first ---
+timeout 150 'if [ "$(cat /sys/class/power_supply/AC/online)" = "0" ]; then brightnessctl -s set 10%; fi' resume 'brightnessctl -r'
+timeout 540 'if [ "$(cat /sys/class/power_supply/AC/online)" = "1" ]; then brightnessctl -s set 10%; fi' resume 'brightnessctl -r'
+timeout 180 'if [ "$(cat /sys/class/power_supply/AC/online)" = "0" ]; then loginctl lock-session; fi'
+timeout 600 'if [ "$(cat /sys/class/power_supply/AC/online)" = "1" ]; then loginctl lock-session; fi'
+timeout 210 'if [ "$(cat /sys/class/power_supply/AC/online)" = "0" ]; then niri msg action power-off-monitors; fi' resume 'niri msg action power-on-monitors'
+timeout 660 'if [ "$(cat /sys/class/power_supply/AC/online)" = "1" ]; then niri msg action power-off-monitors; fi' resume 'niri msg action power-on-monitors'
+timeout 900 'if [ "$(cat /sys/class/power_supply/AC/online)" = "0" ]; then systemctl suspend; fi'
 before-sleep 'loginctl lock-session'

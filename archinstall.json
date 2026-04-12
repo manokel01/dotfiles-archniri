@@ -71,7 +71,7 @@
   "user_config": {
     "!users": [
       {
-        "username": "manokel",
+        "username": "name",
         "!password": "CHANGE_ME",
         "sudo": true,
         "groups": ["wheel", "audio", "video", "input", "storage", "optical", "lp", "scanner", "network", "power"]

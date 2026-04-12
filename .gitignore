@@ -1,1 +1,40 @@
+# Secrets & credentials
+*.key
+*.pem
+*.secret
+*password*
+*credentials*
+.env
+.env.*
+
+# Arch-specific
 archinstall.json
+
+# Compiled/cache
+__pycache__/
+*.pyc
+*.pyo
+*.cache
+
+# Logs
+*.log
+*.log.*
+
+# Thumbnails & media cache
+.cache/
+*.thumb
+
+# System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# Stow conflicts
+.stow-local-ignore
