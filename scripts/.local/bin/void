@@ -1,0 +1,71 @@
+#!/bin/bash
+DOTFILES_DIR="$HOME/dotfiles"
+
+# Decoupled UI files — physical files that live outside stow
+# Format: "live_path:vault_path"
+UI_TARGETS=(
+    ".config/niri/config.kdl:niri/.config/niri/config.kdl"
+    ".config/waybar/config.jsonc:waybar/.config/waybar/config.jsonc"
+    ".config/waybar/style.css:waybar/.config/waybar/style.css"
+    ".config/swayidle/config:swayidle/.config/swayidle/config"
+    ".config/kanshi/config:kanshi/.config/kanshi/config"
+    ".config/gtklock/style.css:gtklock/.config/gtklock/style.css"
+    ".config/gtklock/config.ini:gtklock/.config/gtklock/config.ini"
+    ".config/kitty/kitty.conf:kitty/.config/kitty/kitty.conf"
+    ".config/starship.toml:starship/.config/starship.toml"
+)
+
+# 1. Physical Backup (Decoupled UI -> Vault)
+for entry in "${UI_TARGETS[@]}"; do
+    SRC="${entry%%:*}"
+    DEST="${entry#*:}"
+    
+    if [ -f "$HOME/$SRC" ] && [ ! -L "$HOME/$SRC" ]; then
+        cp "$HOME/$SRC" "$DOTFILES_DIR/$DEST"
+    fi
+done
+
+# 2. Preparation for GitHub
+cd "$DOTFILES_DIR" || exit 1
+git add -A
+
+if git diff --staged --quiet; then
+    echo -e "\n--- VOID: NOTHING TO COMMIT ---"
+    pkill -RTMIN+2 waybar
+    echo ""
+    read -n 1 -s -r -p "Press any key to close..."
+    exit 0
+fi
+
+# 3. The Interactive Prompt
+echo "========================================"
+echo "          NATIVE VOID SYNC              "
+echo "========================================"
+git status -s
+echo "----------------------------------------"
+echo "Enter commit description (or press Ctrl+C to abort):"
+read -r COMMIT_MSG
+
+if [ -z "$COMMIT_MSG" ]; then
+    echo -e "\nAborted: Commit message cannot be empty."
+    pkill -RTMIN+2 waybar
+    echo ""
+    read -n 1 -s -r -p "Press any key to close..."
+    exit 1
+fi
+
+# 4. The Truth Check
+git commit -m "$COMMIT_MSG"
+
+if git push origin main; then
+    echo -e "\n--- VOID: GITHUB SYNC SUCCESSFUL ---"
+else
+    echo -e "\n!!! VOID: GITHUB PUSH FAILED !!!"
+    notify-send -u critical "Void Sync" "GitHub Push FAILED"
+fi
+
+# 5. Final State Sync
+pkill -RTMIN+2 waybar
+
+echo -e "\n========================================"
+read -n 1 -s -r -p "Audit complete. Press any key to close this window..."

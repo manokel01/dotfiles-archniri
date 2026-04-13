@@ -5,6 +5,7 @@ spawn-at-startup "waybar"
 spawn-at-startup "sh" "-c" "vicinae server &"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "swayidle" "-w" "-C" "/home/manokel/.config/swayidle/config"
+spawn-at-startup "udiskie" "--tray"
 
 //Wallpeprs
 spawn-at-startup "swaybg" "-m" "fill" "-i" "/home/manokel/Pictures/Wallpapers/cartoon-of-a-bowl-of-ramen-with-two-monsters-fighting.png"
@@ -79,8 +80,8 @@ binds {
     // Media Keys
    	XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "swayosd-client --output-volume raise"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "swayosd-client --output-volume lower"; }
-    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl set +5% && swayosd-client --brightness raise"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl set 5%- && swayosd-client --brightness lower"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn-sh "swayosd-client --brightness raise & ddcutil --display 1 --noverify --sleep-multiplier 0.1 setvcp 10 + 5"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "swayosd-client --brightness lower & ddcutil --display 1 --noverify --sleep-multiplier 0.1 setvcp 10 - 5"; }
     XF86AudioMute allow-when-locked=true { spawn-sh "swayosd-client --output-volume mute-toggle"; }
 	XF86AudioMicMute allow-when-locked=true { spawn-sh "mic-toggle.sh"; }	
 	XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }

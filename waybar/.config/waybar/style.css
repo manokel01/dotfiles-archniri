@@ -186,9 +186,22 @@ window#waybar {
 }
 
 /* Git sync */
+/* Git sync */
 #custom-git_sync {
     color: #8FBCBB;
     padding: 0 8px;
+}
+
+#custom-git_sync.dirty {
+    color: #BF616A;
+}
+
+#custom-git_sync.unpushed {
+    color: #EBCB8B;
+}
+
+#custom-git_sync.clean {
+    color: #A3BE8C;
 }
 
 /* Language */
@@ -241,8 +254,8 @@ window#waybar {
 /* Power menu */
 #custom-power {
     color: #BF616A;
-    padding: 0 10px;
-    font-size: 14px;
+    padding: 0 20px 0 0px;
+    font-size: 13px;
 }
 
 #custom-power:hover {
@@ -275,6 +288,17 @@ tooltip label {
 #custom-language:hover,
 #custom-clipboard:hover,
 #custom-rclone:hover {
+    background: #3B4252;
+}
+
+#custom-launcher {
+    color: #88C0D0;
+    padding: 0 10px;
+    font-size: 16px;
+}
+
+#custom-launcher:hover {
+    color: #ECEFF4;
     background: #3B4252;
 }
 
