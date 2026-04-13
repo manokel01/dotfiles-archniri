@@ -26,19 +26,24 @@ This system is configured for a strictly professional, minimalist workflow with 
 - **Terminal:** Kitty (Nord, JetBrainsMono Light 12pt, ligatures enabled)
 - **Text Editing:** micro (primary terminal editor, CUA keybinds)
 - **Status Bar:** Waybar (top bar, Nord theme, signal-based language module)
-- **App Launcher:** Vicinae (Rust-based, Wayland-native, replaces Walker)
+- **App Launcher:** Vicinae (Rust-based, Wayland-native)
+- **App Grid:** nwg-drawer (fullscreen app grid, triggered from Waybar)
 - **Window Switcher:** niri-switch (Alt+Tab native for Niri)
 - **Screen Lock:** gtklock (GTK-based, Nord CSS, userinfo + powerbar + dpms modules)
+- **Power Menu:** wlogout (lock/logout/suspend/reboot/shutdown overlay)
 - **Idle Management:** swayidle (dual-path battery/AC logic via `/sys/class/power_supply/AC/online`)
 - **Wallpaper:** swaybg
 - **Notification Daemon:** swaync
 - **System TUIs:** btop, yazi, wiremix
-- **Browser:** Firefox (daily) + Brave (Chromium compatibility)
+- **Browser:** Firefox (daily, hardware-accelerated) + Brave (Chromium/X.com PWA)
 - **Clipboard Manager:** cliphist (accessible via Vicinae clipboard history)
 - **Screenshot:** Grim + Slurp + wl-clipboard
+- **Archive Manager:** file-roller (GTK, Thunar right-click integration)
+- **External Drive Mounting:** udiskie (tray icon, auto-mount on plug)
 - **GTK Management:** nwg-look (Nordic GTK theme, Papirus-Dark icons)
 - **Cloud/Hardware Sync:** Rclone (guarded two-way bisync)
 - **Secret Management:** Bitwarden via rbw CLI
+- **Power Profiles:** power-profiles-daemon (power-saver / balanced / performance)
 - **AUR Helper:** paru
 
 ### File Management
@@ -73,11 +78,12 @@ This system is configured for a strictly professional, minimalist workflow with 
 - 64GB RAM pool prioritised — no swappiness tuning needed
 
 ### Hardware Quirks
-- **Wi-Fi (Qualcomm QCNFA765 / ath11k_pci):** Kernel 6.19+ handles s2idle suspend natively. The `wifi-resume.service` workaround is no longer required and has been disabled.
-- **Brightness:** `brightnessctl` used for kernel-level brightness control. `swayosd-client` displays the OSD bar after each change.
-- **Mic LED (F4):** ThinkPad F4 LED does not respond to software mute state by default. Controlled via `~/.local/bin/mic-toggle.sh` which writes to `/sys/class/leds/platform::micmute/brightness` via a sudoers rule.
+- **Wi-Fi (Qualcomm QCNFA765 / ath11k_pci):** Known speed-drop bug — download collapses to ~3 Mbps after extended use or suspend cycles while upload remains normal. Root cause: AMPDU aggregation session bug. Fix merged in Linux 7.0 (released April 12, 2026 — pending Arch package). Interim workaround: `wifi-fix` alias in `~/.bashrc` restarts NetworkManager.
+- **Brightness:** `brightnessctl` for kernel-level control + `swayosd-client` for OSD. External monitor brightness via DDC (`ddcutil setvcp 10 <value>`) — too slow for interactive keybind use, use monitor physical buttons. Brightness keys send DDC command in parallel via `--noverify` flag.
+- **Mic LED (F4):** Controlled via `~/.local/bin/mic-toggle.sh` writing to `/sys/class/leds/platform::micmute/brightness` via sudoers rule.
 - **Fingerprint:** `fprintd` — enrolled both index fingers. D-Bus activated (no systemd enable needed).
 - **GPU:** AMD Radeon 780M. `LIBVA_DRIVER_NAME=radeonsi`, `VDPAU_DRIVER=radeonsi`.
+- **NuPhy Keyboard:** Firmware Alt/Win swap must be **disabled** via nuphy.io. Software xkb `altwin:swap_lalt_lwin` handles the swap for both keyboards consistently.
 
 ### Journald Hard-Filter
 Drop-in at `/etc/systemd/journald.conf.d/`: `MaxLevelStore=warning`, `SystemMaxUse=100M`. Drops 95% of routine OS logging to keep NVMe in deep sleep states.
@@ -110,6 +116,8 @@ System backups managed via **Snapper** on Btrfs.
 - **Cursor:** Adwaita, 24px
 - **Niri Aesthetics:** Gaps 0, no border rounding, no shadows, no blur. Inactive windows at 0.9 opacity.
 - **Wallpaper:** ramen illustration via swaybg (`-m fill`)
+- **Firefox:** Nord addon installed. Hardware acceleration: WebRender + VA-API enabled.
+- **Brave:** Nord theme applied. Hardware acceleration: VA-API + Vulkan + Skia Graphite via `brave://flags`. X.com installed as PWA (dedicated window).
 
 ### Nord Colour Reference
 
@@ -154,6 +162,18 @@ System backups managed via **Snapper** on Btrfs.
 | Language switch | `MOD + Space` | US ↔ GR + Waybar signal |
 | Window switcher | `Alt + Tab` | niri-switch |
 
+### Waybar Clickable Modules
+
+| Module | Left Click | Right Click |
+|--------|-----------|-------------|
+| App Grid icon | nwg-drawer | — |
+| Git sync icon | void (commit/push) | — |
+| Power profile | cycle profiles | — |
+| Rclone | rclone_sync.sh | rclone_resync.sh |
+| Audio | wiremix TUI | — |
+| Power icon | wlogout overlay | — |
+| Updates | paru -Syu | — |
+
 ### Window Management
 
 | Action | Shortcut |
@@ -186,74 +206,60 @@ System backups managed via **Snapper** on Btrfs.
 
 ## 7. Critical System Quirks
 
-1. **Niri Session Launch:** Must use `uwsm start niri-session` — NOT `uwsm start niri`. The `niri-session` binary correctly exports `WAYLAND_DISPLAY` to the systemd activation environment within UWSM's timeout window.
+1. **Niri Session Launch:** Must use `uwsm start niri-session` — NOT `uwsm start niri`.
 
-2. **Keyboard Layout:** xkb `altwin:swap_lalt_lwin` swaps physical Alt and Win keys in software. NuPhy Air75 V3 firmware swap must be **disabled** via nuphy.io — otherwise the double-swap undoes itself and the NuPhy behaves as unswapped. Greek layout uses `gr` (not `el`) in xkb.
+2. **Keyboard Layout:** xkb `altwin:swap_lalt_lwin` swaps physical Alt and Win keys. NuPhy firmware swap must be **disabled** via nuphy.io. Greek layout uses `gr` (not `el`) in xkb.
 
-3. **Waybar Language Module:** Uses signal-based update (`pkill -SIGRTMIN+1 waybar`) — not polling. `interval: "once"` + signal avoids the 1-second polling overhead.
+3. **Waybar Language Module:** Signal-based update (`pkill -SIGRTMIN+1 waybar`). `interval: 2` for polling fallback.
 
-4. **gtklock Powerbar Icons:** The powerbar module icons (`system-shutdown-symbolic`, `system-reboot-symbolic`, `weather-clear-night-symbolic`) fail to render from the GTK icon theme at lock time. Workaround: buttons are colour-coded via CSS (red=shutdown, yellow=reboot, blue=suspend). Functional but visually imperfect.
+4. **gtklock Powerbar Icons:** Icons fail to render at lock time. CSS colour workaround: red=shutdown, yellow=reboot, blue=suspend.
 
-5. **Brightness Backend:** `swayosd-client --brightness` does not detect `amdgpu_bl1` automatically. Brightness is set via `brightnessctl` and the OSD is triggered separately via `swayosd-client --brightness raise/lower` (which shows the bar without actually changing brightness again — harmless).
+5. **Brightness + External Monitor:** Brightness keys control internal (brightnessctl) and external (ddcutil `--noverify`) in parallel. OSD reflects internal display only. DDC too slow for dedicated keybind.
 
-6. **Mic LED Control:** `/sys/class/leds/platform::micmute/brightness` requires root write access. Handled via a sudoers drop-in (`/etc/sudoers.d/micmute`) granting `manokel ALL=(ALL) NOPASSWD: /usr/bin/tee`.
+6. **Wi-Fi Speed Drop:** `wifi-fix` alias restarts NetworkManager. Permanent fix in Linux 7.0 — run `paru -Syu` when kernel 7.0 lands in Arch repos.
 
-7. **Decoupled UI Files:** `~/.config/niri/config.kdl` and `~/.config/waybar/` MUST remain physical directories — NOT Stow symlinks. This is required for `git_sync_status.sh` to execute diff checks and for Waybar to hot-reload CSS without symlink resolution issues.
+7. **Mic LED Control:** Sudoers drop-in required: `manokel ALL=(ALL) NOPASSWD: /usr/bin/tee`.
 
-8. **Absolute Path Binding:** Niri keybinds using `spawn-sh` must reference scripts by name only if `~/.local/bin` is in `$PATH`. Otherwise use absolute paths (`/home/manokel/.local/bin/script.sh`).
+8. **Decoupled UI Files:** `~/.config/niri/config.kdl` and `~/.config/waybar/` MUST remain physical files — NOT Stow symlinks.
 
-9. **Auto-login to Niri:** `~/.bash_profile` contains: `if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then exec uwsm start niri-session; fi`. No display manager installed — login at TTY1 launches Niri automatically.
+9. **Auto-login:** `~/.bash_profile` launches `uwsm start niri-session` on TTY1 automatically.
+
+10. **Power Profile:** Waybar power profile icon cycles power-saver → balanced → performance via `powerprofilesctl` + `notify-send`.
+
+11. **X.com PWA:** Installed in Brave via `⋮` → More tools → Create shortcut → Open as window. Isolated process, no tab overhead.
 
 ---
 
 ## 8. Maintenance Workflow (The "Void" Sync)
 
-Dotfiles are managed via a centralised repository at `~/dotfiles/` pushed to GitHub (`origin main`). The system uses a **Hybrid Deployment Strategy** to balance stability with live UI experimentation.
-
 ### The Hybrid Logic
 
-- **Stow-Managed (Stable):** Core applications and scripts — `micro`, `kitty`, `starship`, all scripts in `~/.local/bin/`. These reside permanently in the vault and are symlinked to the system.
-- **Decoupled (Experimental):** UI-critical configs for `niri` (`config.kdl`), `waybar` (`config.jsonc`, `style.css`). These remain **physical files** in `~/.config/`. The `void` script uses an explicit `UI_TARGETS` array to pull these into the vault during sync.
+- **Stow-Managed:** `kitty`, `starship`, `gtklock`, `vicinae`, `wlogout`, all scripts in `~/.local/bin/`
+- **Decoupled:** `niri/config.kdl`, `waybar/config.jsonc`, `waybar/style.css`, `swayidle/config`, `kanshi/config`, `gtklock/style.css`, `kitty/kitty.conf`, `starship.toml`
 
-### The Sync Process (`void` script)
+### The Sync Process
 
-1. **Live Audit:** `git_sync_status.sh` runs a `diff` between physical UI files (niri, waybar) and the vault. If they differ, the Waybar Git icon alerts.
-2. **Pre-sync Snapshot:** `sudo snapper create` captures a Btrfs snapshot before committing.
-3. **Vault Ingestion:** `void` copies physical UI and script changes into `~/dotfiles/`, ignoring symlinks.
-4. **GitHub Serialisation:** Changes are staged, committed, and pushed. A `SIGUSR2` signal resets the Waybar Git icon to Green (Synced).
-
-### UI_TARGETS Array (needs update from Hyprland paths)
-The `void` script `UI_TARGETS` array must be updated to reference Niri/Arch paths:
-- `~/.config/niri/config.kdl`
-- `~/.config/waybar/config.jsonc`
-- `~/.config/waybar/style.css`
-- `~/.config/swayidle/config`
-- `~/.config/kanshi/config`
-- `~/.config/gtklock/style.css`
-- `~/.config/kitty/kitty.conf`
-- `~/.config/starship.toml`
+1. Waybar Git icon shows drift when live files differ from vault
+2. Click Git icon → opens `void` in floating Kitty window
+3. `void` copies decoupled files into vault, stages, prompts for commit message, pushes
+4. Waybar Git icon resets to Green on success
 
 ---
 
 ## 9. Data Integrity & Cloud Sync
 
-The local data directory (`/mnt/data`) is the Ground Truth, syncing bidirectionally with Google Drive via Rclone bisync.
-
-- **Silent Auditor:** A systemd user-timer triggers `rclone_auditor.sh` daily
-- **Safe Auto-Commit:** Additions-only → syncs invisibly
-- **Guarded Interrupt:** Deletions/updates detected → aborts, drops `~/.rclone_pending_review`
-- **UI Feedback:** Waybar `custom/rclone` module: Green (Idle), Red (Active), Blue (Pending Review), Yellow (Error)
-- **Manual Approval:** Clicking Blue icon launches `rclone_sync.sh` in a floating Kitty window
-- **Hard Resync:** Right-click launches `rclone_resync.sh` (`--resync --resilient`) to resolve split-brain states
+- **Rclone bisync:** `/mnt/data` ↔ Google Drive
+- **Waybar `custom/rclone`:** Green (Idle), Red (Active), Blue (Pending Review), Yellow (Error)
+- **Manual Approval:** Click Blue → `rclone_sync.sh` in floating Kitty window
+- **Hard Resync:** Right-click → `rclone_resync.sh` (`--resync --resilient`)
 
 ---
 
 ## 10. Secrets & Biometrics
 
-- **Stack:** `rbw` (Rust CLI) + Vicinae (clipboard/bitwarden integration) + `pinentry-gnome3`
-- **Biometrics:** `fprintd` — both index fingers enrolled. Integrated with PAM for fingerprint unlock
-- **Workflow:** Vicinae clipboard history surfaces recent copies; `rbw` CLI used for programmatic access
-- **Sync:** `rbw sync` — fully functional offline for read access
+- **Stack:** `rbw` (Rust CLI) + Vicinae clipboard + `pinentry-gnome3`
+- **Biometrics:** `fprintd` — both index fingers enrolled, PAM integrated
+- **Sync:** `rbw sync` — functional offline for read access
 
 ---
 
@@ -265,16 +271,15 @@ The local data directory (`/mnt/data`) is the Ground Truth, syncing bidirectiona
 # 1. Boot Arch live USB, enable SSH
 passwd root && systemctl start sshd
 
-# 2. Download and run pre-archinstall.sh (partitioning + Btrfs setup)
+# 2. Run pre-archinstall.sh
 curl -O https://raw.githubusercontent.com/manokel01/dotfiles-archniri/main/pre-archinstall.sh
-SKIP_PARTITIONING=1 bash pre-archinstall.sh  # if partitions already created via cgdisk
+SKIP_PARTITIONING=1 bash pre-archinstall.sh
 
-# 3. Set passwords in archinstall.json, then run archinstall
+# 3. Run archinstall
 curl -O https://raw.githubusercontent.com/manokel01/dotfiles-archniri/main/archinstall.json
-# Edit passwords, then:
 archinstall --config archinstall.json
 
-# 4. After reboot, run arch-setup.sh as manokel
+# 4. Run arch-setup.sh after reboot
 bash <(curl -s https://raw.githubusercontent.com/manokel01/dotfiles-archniri/main/arch-setup.sh)
 ```
 
@@ -282,44 +287,46 @@ bash <(curl -s https://raw.githubusercontent.com/manokel01/dotfiles-archniri/mai
 
 ```
 dotfiles-archniri/
-├── archinstall.json                                 ← archinstall config
-├── pre-archinstall.sh                               ← Btrfs partition + mount setup
-├── arch-setup.sh                                    ← post-install automation (15 steps)
-├── niri/.config/niri/config.kdl                     ← Niri compositor config
-├── kanshi/.config/kanshi/config                     ← monitor profiles (clamshell etc.)
-├── swayidle/.config/swayidle/config                 ← idle management
-├── waybar/.config/waybar/config.jsonc               ← Waybar modules
-├── waybar/.config/waybar/style.css                  ← Waybar Nord theme
-├── kitty/.config/kitty/kitty.conf                   ← terminal config
-├── starship/.config/starship.toml                   ← shell prompt (Nord, Pure style)
-├── gtklock/.config/gtklock/style.css                ← lock screen Nord theme
-├── gtklock/.config/gtklock/config.ini               ← lock screen modules
-├── scripts/.local/bin/                              ← all custom scripts
-│   ├── mic-toggle.sh                                ← F4 mic mute + LED + OSD
-│   ├── toggle-layout.sh                             ← Waybar language indicator
-│   ├── pacman_updates.sh                            ← Waybar updates module
-│   ├── check_locks.sh                               ← system health snapshot
-│   └── battery_notify.sh                            ← low battery alert
-└── systemd-user/.config/systemd/user/
-    └── gtklock.service                              ← lock.target integration
+├── archinstall.json
+├── pre-archinstall.sh
+├── arch-setup.sh
+├── niri/.config/niri/config.kdl
+├── kanshi/.config/kanshi/config
+├── swayidle/.config/swayidle/config
+├── waybar/.config/waybar/config.jsonc + style.css
+├── kitty/.config/kitty/kitty.conf
+├── starship/.config/starship.toml
+├── gtklock/.config/gtklock/style.css + config.ini
+├── vicinae/.config/vicinae/config.json
+├── wlogout/.config/wlogout/layout + style.css
+├── scripts/.local/bin/
+│   ├── mic-toggle.sh          ← F4 mic mute + LED + OSD
+│   ├── toggle-layout.sh       ← Waybar language indicator
+│   ├── pacman_updates.sh      ← Waybar updates module
+│   ├── git_sync_status.sh     ← Waybar git drift detector
+│   ├── void                   ← dotfiles sync script
+│   ├── power_status.sh        ← Waybar power profile icon
+│   ├── power_profile.sh       ← power profile cycler
+│   ├── wlogout-launch.sh      ← Niri-aware wlogout launcher
+│   ├── check_locks.sh         ← system health snapshot
+│   └── battery_notify.sh      ← low battery alert
+└── systemd-user/.config/systemd/user/gtklock.service
 ```
 
-### Key Post-Install Commands
+### Stow Deploy
 
 ```bash
-# Verify security
-sudo aa-status          # AppArmor: 161+ profiles loaded
-sudo ufw status         # Firewall: active
+cd ~/dotfiles
+stow niri kanshi swayidle waybar kitty starship gtklock vicinae wlogout scripts systemd-user
+```
 
-# Start Niri session
-uwsm start niri-session
+### Key Commands
 
-# Stow dotfiles
-cd ~/dotfiles && stow niri kanshi swayidle waybar kitty starship scripts systemd-user
-
-# Check system health
-~/.local/bin/check_locks.sh
-
-# Update everything
-maintain  # alias: paru -Syu + flatpak update + fwupdmgr update + paru -Sc
+```bash
+sudo aa-status              # AppArmor: 161+ profiles loaded
+sudo ufw status             # Firewall: active
+maintain                    # paru -Syu + flatpak + fwupdmgr + paru -Sc
+wifi-fix                    # restore Wi-Fi speed if dropped
+powerprofilesctl get        # check current power profile
+snapper -c root list        # list Btrfs snapshots
 ```
