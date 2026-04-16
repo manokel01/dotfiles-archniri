@@ -26,7 +26,7 @@
 /* #B48EAD - nord15 - purple */
 
 * {
-    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
+    font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", sans-serif;
     font-size: 13px;
     border: none;
     border-radius: 0;
@@ -258,11 +258,6 @@ window#waybar {
     font-size: 13px;
 }
 
-#custom-power:hover {
-    color: #D8DEE9;
-    background: #BF616A;
-}
-
 /* Tooltip */
 tooltip {
     background: #3B4252;
@@ -302,4 +297,17 @@ tooltip label {
     background: #3B4252;
 }
 
+/* Blue light filter */
+#custom-bluelight {
+    font-size: 16px;
+    padding: 0 10px;
+}
+
+#custom-bluelight.on {
+    color: #e6c387; /* Warm amber/yellow */
+}
+
+#custom-bluelight.off {
+    color: #6c7086; /* Dim/inactive grey */
+}
 

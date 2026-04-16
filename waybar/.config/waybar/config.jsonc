@@ -21,7 +21,7 @@
         "custom/language",
         "tray",
         "custom/rclone",
-        "custom/webcam",
+        "custom/bluelight",
         "pulseaudio", 
         "custom/power_profile",
         "battery",
@@ -110,15 +110,6 @@
         "tooltip": false
     },
 
-    "custom/webcam": {
-            "exec": "/home/manokel/.local/bin/webcam_sensor.sh",
-            "return-type": "json",
-            "interval": 2,
-            "format": "{}",
-            "on-click": "/home/manokel/.local/bin/webcam_action.sh",
-            "tooltip": true
-        },
-
     "custom/keybinds": {
         "format": "󰌌",
         "on-click": "/home/manokel/.local/bin/keybinds.sh",
@@ -162,14 +153,14 @@
     },
     
     "custom/updates": {
-            "format": "{}",
-            "return-type": "json",
-            "interval": 43200,
-            "exec": "/home/manokel/.local/bin/pacman_updates.sh",
-            "on-click": "kitty --class float-term bash -c 'paru -Syu; pkill -RTMIN+8 waybar; exec bash'",
-            "signal": 8,
-            "tooltip": true
-        },
+        "format": "{}",
+        "return-type": "json",
+        "interval": 43200,
+        "exec": "/home/manokel/.local/bin/pacman_updates.sh",
+        "on-click": "kitty --class float-term /home/manokel/.local/bin/pacman_upgrade.sh",
+        "signal": 8,
+        "tooltip": true
+    },
 
     "memory": {
         "interval": 10,
@@ -189,5 +180,15 @@
         "format": "󰻠 {usage}%",
         "on-click": "kitty btop",
         "tooltip": true
+    },
+
+    "custom/bluelight": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.local/bin/bluelight.sh status",
+        "on-click": "~/.local/bin/bluelight.sh toggle",
+        "signal": 8,
+        "interval": "once",
+        "tooltip": false
     }
 }
