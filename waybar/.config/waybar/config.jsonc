@@ -86,6 +86,7 @@
             "warning": 30,
             "critical": 15
         },
+        "on-click": "/usr/local/bin/bat-toggle",
         "format": "{icon} {capacity}% | {power:0.1f}W",
         "format-charging": "󰂄 {capacity}% | +{power:0.1f}W",
         "format-plugged": "󰚥 {capacity}%",
