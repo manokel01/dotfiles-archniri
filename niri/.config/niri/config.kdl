@@ -6,6 +6,12 @@ spawn-at-startup "sh" "-c" "vicinae server &"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "swayidle" "-w" "-C" "/home/manokel/.config/swayidle/config"
 spawn-at-startup "udiskie" "--tray"
+// 1. The Persistence Bridge (Fixes the 2-3 times copy issue)
+spawn-at-startup "wl-clip-persist" "--clipboard" "both"
+// 2. The History Managers (Wrapped in shell for environment stability)
+spawn-at-startup "sh" "-c" "wl-paste --type text --watch cliphist store"
+spawn-at-startup "sh" "-c" "wl-paste --type image --watch cliphist store"
+spawn-at-startup "xwayland-satellite"
 
 //Wallpeprs
 spawn-at-startup "swaybg" "-m" "fill" "-i" "/home/manokel/Pictures/Wallpapers/cartoon-of-a-bowl-of-ramen-with-two-monsters-fighting.png"
@@ -210,7 +216,11 @@ binds {
 // Layout Settings
 layout {
     gaps 0
-    center-focused-column "on-overflow"
+    
+    // This kills the "Main Stage" centering. 
+    // Windows will now stay left-aligned until the ribbon actually fills up.
+    center-focused-column "never"
+    
     background-color "transparent"
 
     preset-column-widths {
@@ -230,7 +240,6 @@ layout {
     }
 
     struts {}
-
 }
 
 // Animation Settings
@@ -341,6 +350,14 @@ window-rule {
 window-rule {
     match app-id=r#"Bitwarden"# title=r#".*unlock.*"#
     open-floating true
+}
+
+window-rule {
+    // Match the exact ID Brave generated for the X app
+    match app-id=r#"brave-lodlkdfmihgonocnmddehnfgiljnadcf-Default"#
+    
+    // Forces it to open at 30% width (narrower than your 33% preset)
+    default-column-width { proportion 0.28; }
 }
 
 // Notification and system utilities
