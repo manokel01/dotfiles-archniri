@@ -152,17 +152,14 @@ window#waybar {
     padding: 0 8px;
 }
 
-#battery.charging,
-#battery.plugged {
-    color: #A3BE8C;
-}
-
 #battery.warning:not(.charging) {
-    color: #EBCB8B;
+    background-color: #4C566A; /* Nord3 - Lighter dark grey */
+    color: #EBCB8B;            /* Keep the text orange/yellow */
 }
 
 #battery.critical:not(.charging) {
-    color: #BF616A;
+    background-color: #4C566A; /* Nord3 - Lighter dark grey */
+    color: #BF616A;            /* Keep the text orange/yellow */
     animation: blink 0.5s steps(1) infinite;
 }
 
@@ -282,6 +279,10 @@ tooltip label {
 #custom-git_sync:hover,
 #custom-language:hover,
 #custom-clipboard:hover,
+#tray:hover,
+#custom-bluelight:hover,
+#custom-power_profile:hover,
+#custom-power:hover,
 #custom-rclone:hover {
     background: #3B4252;
 }

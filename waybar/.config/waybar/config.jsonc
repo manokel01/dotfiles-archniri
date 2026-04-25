@@ -14,13 +14,11 @@
     ],
     "modules-center": [
         "clock#time", 
-        "custom/keybinds", 
         "clock#date"
     ],
     "modules-right": [
         "custom/language",
         "tray",
-        "custom/rclone",
         "custom/bluelight",
         "pulseaudio", 
         "custom/power_profile",
@@ -32,17 +30,6 @@
         "all-outputs": false
     },
 
-    "custom/rclone": {
-            "format": "{}",
-            "return-type": "json",
-            "exec": "/home/manokel/.local/bin/rclone_status.sh",
-            "interval": 20,
-            "on-click": "kitty --class sync_floats -e /home/manokel/.local/bin/rclone_sync.sh",
-            "on-click-right": "kitty --class sync_floats -e /home/manokel/.local/bin/rclone_resync.sh",
-            "signal": 10,
-            "tooltip": true
-    },
-
     "custom/launcher": {
         "format": "󰣆",
         "on-click": "nwg-drawer",
@@ -52,15 +39,15 @@
     "custom/power_profile": {
         "exec": "/home/manokel/.local/bin/power_status.sh",
         "return-type": "json",
-        "interval": 10,
+        "interval": 60,
         "signal": 1,
         "on-click": "/home/manokel/.local/bin/power_profile.sh",
         "format": "{}"
     },
 
     "clock#time": {
-        "interval": 1,
-        "format": "{:%H:%M:%S}",
+        "interval": 60,
+        "format": "{:%H:%M}",
         "tooltip": false
     },
 
@@ -81,24 +68,24 @@
     },
 
     "battery": {
-        "interval": 5,
+        "interval": 60,
         "states": {
-            "warning": 30,
-            "critical": 15
+            "warning": 20,
+            "critical": 10
         },
         "on-click": "/usr/local/bin/bat-toggle",
         "format": "{icon} {capacity}% | {power:0.1f}W",
         "format-charging": "󰂄 {capacity}% | +{power:0.1f}W",
         "format-plugged": "󰚥 {capacity}%",
-        "format-critical": "󱃍 {capacity}%!!", 
-        "format-warning": "󰂃 {capacity}%",
+        "format-critical": "󱃍 {capacity}% | {power:0.1f}W", 
+        "format-warning": "󰂃 {capacity}% | {power:0.1f}W",
         "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
         "tooltip-format": "Time Left: {timeTo}\nHealth: {health}%\nPower: {power}W"
     },
 
     "custom/language": {
         "exec": "/home/manokel/.local/bin/toggle-layout.sh",
-        "interval": 2,
+        "interval": "once",
         "on-click": "niri msg action switch-layout next && pkill -SIGRTMIN+1 waybar",
         "signal": 1,
         "format": "{}",
@@ -108,12 +95,6 @@
     "custom/power": {
         "format": "⏻",
         "on-click": "/home/manokel/.local/bin/wlogout-launch.sh",
-        "tooltip": false
-    },
-
-    "custom/keybinds": {
-        "format": "󰌌",
-        "on-click": "/home/manokel/.local/bin/keybinds.sh",
         "tooltip": false
     },
     
@@ -164,7 +145,7 @@
     },
 
     "memory": {
-        "interval": 10,
+        "interval": 30,
         "format": "󰍛 {percentage}%",
         "format-alt": "󰍛 {used:0.1f}GiB",
         "on-click": "kitty btop",
@@ -177,7 +158,7 @@
     },
 
     "cpu": {
-        "interval": 10,
+        "interval": 60,
         "format": "󰻠 {usage}%",
         "on-click": "kitty btop",
         "tooltip": true
@@ -186,8 +167,8 @@
     "custom/bluelight": {
         "format": "{}",
         "return-type": "json",
-        "exec": "~/.local/bin/bluelight.sh status",
-        "on-click": "~/.local/bin/bluelight.sh toggle",
+        "exec": "/home/manokel/.local/bin/bluelight.sh status",
+        "on-click": "/home/manokel/.local/bin/bluelight.sh toggle",
         "signal": 8,
         "interval": "once",
         "tooltip": false
